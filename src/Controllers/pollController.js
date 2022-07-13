@@ -1,16 +1,16 @@
-import db from '../dbstrategy/mongo.js';
+import { db } from '../dbstrategy/mongo.js';
 import dayjs from 'dayjs';
 import { titleSchema } from '../Schemas/titleSchema.js';
 
 export async function postPoll(req, res){
 
-    const title = req.body.title;
+    const { title } = req.body;
     let expireAt = req.body.expireAt;
 
-    const validTitle = titleSchema.validate(title);
+    const validData = titleSchema.validate(req.body);
 
-    if(validTitle.error || !title){
-        return res.status(422).send('A enquete deve ter um título');
+    if(validData.error){
+        return res.sendStatus(422);
     }
 
     if(expireAt === "" || !expireAt){
@@ -38,6 +38,7 @@ export async function getPoll(req, res){
         const polls = await db.collection('polls').find().toArray();
 
         res.send(polls).status(201);
+        
     } catch(error){
         res.send('Não foi possível encontrar as enquetes').status(500);
     }

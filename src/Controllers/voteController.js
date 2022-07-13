@@ -1,4 +1,4 @@
-import db from '../dbstrategy/mongo.js';
+import { db } from '../dbstrategy/mongo.js';
 
 export async function postVote(req, res){
 

@@ -17,4 +17,4 @@ try {
 
 const objectId = ObjectId;
 
-export default db;
+export { db, objectId };
