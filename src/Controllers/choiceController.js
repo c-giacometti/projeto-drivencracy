@@ -31,21 +31,23 @@ export async function postChoice(req, res){
         if(expireAt < dateNow){
             return res.sendStatus(403);
         }
-
+ 
         //verifica se o titulo da opção ja está em uso
-        const titleInUse = await db.collection('choices').findOne({ title: title});
+        const titleInUse = await db.collection('choices').findOne({ 
+            title: title
+        });
 
         if(titleInUse){
             return res.sendStatus(409);
         }
 
         //insere a opção na coleção de opções
-        const option = await db.collection('choices').insertOne({
+        const choice = await db.collection('choices').insertOne({
             title,
-            poolId
+            poolId: objectId(poolId)
         });
 
-        res.send(option).status(201);
+        res.send(choice).status(201);
 
     } catch(error){
         res.sendStatus(500);
@@ -54,4 +56,25 @@ export async function postChoice(req, res){
 
 export async function showPollChoices(req, res){
 
+    try {
+
+        const poolId = req.params.id;
+
+        //verifica se a enquete existe
+        const poolExists = await db.collection('polls').findOne({
+             _id: objectId(poolId) 
+        });
+
+        if(!poolExists){
+            return res.sendStatus(404);
+        }
+
+        //procura e retorna as opções da enquete
+        const poolChoices = await db.collection('choices').find({ poolId: poolId }).toArray();
+
+        res.send(poolChoices).status(201);
+
+    } catch (error) {
+        res.sendStatus(500);
+    }
 }
