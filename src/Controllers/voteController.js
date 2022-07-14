@@ -56,13 +56,15 @@ export async function showPollResult(req, res){
         }
 
         //encontra as opções da enquete
-        const poolChoices = await db.collection('choices').find({ poolId }).toArray();
+        const poolChoices = await db.collection('choices').find({ poolId: objectId(poolId) }).toArray();
 
         let mostVoted = 0;
         let mostVotedTitle = "";
+        let result = [];
 
         //encontra os votos das opções
-        poolChoices.map(async (item) => {
+
+        const promises = poolChoices.map( async (item) => {
 
             const vote = await db.collection('votes').find({ choiceId: item._id }).toArray();
             const voteCount = vote.length;
@@ -72,18 +74,29 @@ export async function showPollResult(req, res){
                 mostVotedTitle = item.title;
             }
 
-            let result = {
-                mostVotedTitle,
-                mostVoted
-            }
+            return mostVoted, mostVotedTitle;
         });
 
-        console.log(result);
+        const data = await Promise.all(promises);
 
-        
-        res.send(poolChoices).status(201);
+        const { _id, title, expireAt } = validPool;
+
+        result = {
+            _id,
+            title,
+            expireAt,
+            result: {
+                title: mostVotedTitle,
+                votes: mostVoted
+            }
+        }
+
+        /* const finalResult = data.slice(-1); */
+
+        res.send(result).status(201);
 
     } catch(error){
+        console.log(error)
         res.sendStatus(500);
     }
 

@@ -70,7 +70,7 @@ export async function showPollChoices(req, res){
         }
 
         //procura e retorna as opções da enquete
-        const poolChoices = await db.collection('choices').find({ poolId: poolId }).toArray();
+        const poolChoices = await db.collection('choices').find({ poolId: objectId(poolId) }).toArray();
 
         res.send(poolChoices).status(201);
 
