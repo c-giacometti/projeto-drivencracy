@@ -62,13 +62,14 @@ export async function showPollResult(req, res){
         let mostVotedTitle = "";
         let result = [];
 
-        //encontra os votos das opções
+        //encontra a quantidade de votos de cada opção
 
         const promises = poolChoices.map( async (item) => {
 
             const vote = await db.collection('votes').find({ choiceId: item._id }).toArray();
             const voteCount = vote.length;
-
+            
+            //encontra a opção mais votada
             if(voteCount > mostVoted){
                 mostVoted = voteCount;
                 mostVotedTitle = item.title;
@@ -90,8 +91,6 @@ export async function showPollResult(req, res){
                 votes: mostVoted
             }
         }
-
-        /* const finalResult = data.slice(-1); */
 
         res.send(result).status(201);
 
