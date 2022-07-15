@@ -78,8 +78,6 @@ export async function showPollResult(req, res){
             return mostVoted, mostVotedTitle;
         });
 
-/*         const data = await Promise.all(promises); */
-
         const { _id, title, expireAt } = validPool;
 
         result = {
